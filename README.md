@@ -15,6 +15,9 @@ Support input formats:
 
 * **.zip** file: zipped dmarc report in xml format
 
+* **.eml** file: an electronic mail format or email saved in plain text - dovecot-report-converter
+  tries to extract .xml, .gz or .zip attachments from found eml files to `input.dir`
+
 Support output formats:
 
 * **html_static** output file is a HTML, generated from builtin template htmlStaticTmpl (consts.go).
@@ -185,17 +188,17 @@ Building from sources
 2. Download sources:
 
    ```bash
-   go get -u github.com/tierpod/dmarc-report-converter
+   git clone https://github.com/tierpod/dmarc-report-converter.git
    ```
 
 3. Build binary and create installation archive:
 
    ```bash
-   cd $HOME/go/src/github.com/tierpod/dmarc-report-converter
+   cd dmarc-report-converter
    make release
    ```
 
-4. Installation archive will be places inside _release_ directory. Also, if you want to test
+4. Installation archive will be places inside _dist_ directory. Also, if you want to test
    dmarc-report-converter without installation, you can execute:
 
    ```bash
