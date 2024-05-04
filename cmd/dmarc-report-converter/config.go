@@ -13,6 +13,7 @@ type config struct {
 	Input        Input  `yaml:"input"`
 	Output       Output `yaml:"output"`
 	LookupAddr   bool   `yaml:"lookup_addr"`
+	LookupLimit  int    `yaml:"lookup_limit"`
 	MergeReports bool   `yaml:"merge_reports"`
 	LogDebug     bool   `yaml:"log_debug"`
 	LogDatetime  bool   `yaml:"log_datetime"`
@@ -33,6 +34,7 @@ type IMAP struct {
 	Mailbox  string `yaml:"mailbox"`
 	Debug    bool   `yaml:"debug"`
 	Delete   bool   `yaml:"delete"`
+	Security string `yaml:"security"`
 }
 
 // IsConfigured return true if IMAP is configured
@@ -72,8 +74,20 @@ func loadConfig(path string) (*config, error) {
 		return nil, err
 	}
 
+	if c.LookupLimit < 1 {
+		c.LookupLimit = 50
+	}
+
 	if c.Input.Dir == "" {
 		return nil, fmt.Errorf("input.dir is not configured")
+	}
+
+	if c.Input.IMAP.Security == "" {
+		c.Input.IMAP.Security = "tls"
+	}
+
+	if c.Input.IMAP.Security != "tls" && c.Input.IMAP.Security != "starttls" && c.Input.IMAP.Security != "plaintext" {
+		return nil, fmt.Errorf("'input.imap.security' must be one of: tls, starttls, plaintext")
 	}
 
 	// Determine which template is used based upon Output.Format.

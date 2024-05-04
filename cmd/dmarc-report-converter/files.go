@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
@@ -85,7 +86,24 @@ func (c *filesConverter) find() error {
 		}
 	}
 
-	files, err := filepath.Glob(filepath.Join(c.cfg.Input.Dir, "*.*"))
+	// Walk Input.Dir for a list of files to process, skipping eml files.
+	var files []string
+	err = filepath.Walk(c.cfg.Input.Dir, func(path string, info fs.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if info.IsDir() {
+			// Process the root dir but don't recurse
+			if path != c.cfg.Input.Dir {
+				return filepath.SkipDir
+			}
+		} else if filepath.Ext(path) != ".eml" {
+			files = append(files, path)
+		}
+
+		return nil
+	})
 	if err != nil {
 		return err
 	}
@@ -106,7 +124,7 @@ func (c *filesConverter) convert() {
 			continue
 		}
 
-		report, err := readParse(file, f, c.cfg.LookupAddr)
+		report, err := readParse(file, f, c.cfg.LookupAddr, c.cfg.LookupLimit)
 		if err != nil {
 			file.Close()
 			log.Printf("[ERROR] files: %v in file %v, skip", err, f)

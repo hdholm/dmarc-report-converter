@@ -43,15 +43,24 @@ var xmlRecord1 = Record{
 		EnvelopeFrom: "",
 	},
 	AuthResults: AuthResults{
-		DKIM: DKIMAuthResult{
-			Domain:   "test.net",
-			Result:   "pass",
-			Selector: "selector",
+		DKIM: []DKIMAuthResult{
+			{
+				Domain:   "test1.net",
+				Result:   "fail",
+				Selector: "selector1",
+			},
+			{
+				Domain:   "test2.net",
+				Result:   "pass",
+				Selector: "selector2",
+			},
 		},
-		SPF: SPFAuthResult{
-			Domain: "test.net",
-			Result: "pass",
-			Scope:  "mfrom",
+		SPF: []SPFAuthResult{
+			{
+				Domain: "test.net",
+				Result: "pass",
+				Scope:  "mfrom",
+			},
 		},
 	},
 }
@@ -71,15 +80,19 @@ var xmlRecord2 = Record{
 		EnvelopeFrom: "",
 	},
 	AuthResults: AuthResults{
-		DKIM: DKIMAuthResult{
-			Domain:   "test2.net",
-			Result:   "fail",
-			Selector: "selector",
+		DKIM: []DKIMAuthResult{
+			{
+				Domain:   "test2.net",
+				Result:   "fail",
+				Selector: "selector",
+			},
 		},
-		SPF: SPFAuthResult{
-			Domain: "test2.net",
-			Result: "softfail",
-			Scope:  "mfrom",
+		SPF: []SPFAuthResult{
+			{
+				Domain: "test2.net",
+				Result: "softfail",
+				Scope:  "mfrom",
+			},
 		},
 	},
 }
@@ -137,7 +150,7 @@ func TestReadParseXML(t *testing.T) {
 	}
 	defer f.Close()
 
-	out, err := ReadParseXML(f, false)
+	out, err := ReadParseXML(f, false, 1)
 	if err != nil {
 		t.Fatalf("ReadParseXML: %v", err)
 	}
@@ -154,7 +167,7 @@ func TestReadParseGZIP(t *testing.T) {
 	}
 	defer f.Close()
 
-	out, err := ReadParseGZIP(f, false)
+	out, err := ReadParseGZIP(f, false, 1)
 	if err != nil {
 		t.Fatalf("ReadParseGZIP: %v", err)
 	}
@@ -171,7 +184,7 @@ func TestReadParseZIP(t *testing.T) {
 	}
 	defer f.Close()
 
-	out, err := ReadParseZIP(f, false)
+	out, err := ReadParseZIP(f, false, 1)
 	if err != nil {
 		t.Fatalf("ReadParseZIP: %v", err)
 	}
@@ -190,7 +203,7 @@ func TestReadParse(t *testing.T) {
 		}
 		defer f.Close()
 
-		out, err := ReadParse(f, false)
+		out, err := ReadParse(f, false, 1)
 		if err != nil {
 			t.Fatalf("ReadParse(%v): %v", testFile, err)
 		}
@@ -225,15 +238,13 @@ var xmlEmptyReport = Report{
 				EnvelopeFrom: "",
 			},
 			AuthResults: AuthResults{
-				DKIM: DKIMAuthResult{
-					Domain:   "",
-					Result:   "",
-					Selector: "",
-				},
-				SPF: SPFAuthResult{
-					Domain: "",
-					Result: "",
-					Scope:  "",
+				DKIM: nil,
+				SPF: []SPFAuthResult{
+					{
+						Domain: "",
+						Result: "",
+						Scope:  "",
+					},
 				},
 			},
 		},
@@ -253,12 +264,12 @@ func TestReadParse_Empty(t *testing.T) {
 		t.Fatalf("ReadParse(%v): %v", testFile, err)
 	}
 	defer f.Close()
-	out, err := ReadParse(f, false)
+	out, err := ReadParse(f, false, 1)
 	if err != nil {
 		t.Fatalf("ReadParse(%v): %v", testFile, err)
 	}
 
 	if !reflect.DeepEqual(out, xmlEmptyReport) {
-		t.Errorf("ReadParse(%v): parsed structs are invalid: %+v", testFile, out)
+		t.Errorf("ReadParse(%v): parsed structs are invalid:\nGOT:\n%#v\nWANT:\n%#v", testFile, out, xmlEmptyReport)
 	}
 }

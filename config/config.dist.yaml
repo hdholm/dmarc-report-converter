@@ -10,6 +10,8 @@ input:
   #  debug: no
   # delete emails from server after fetch?
   #  delete: no
+  # connection security should be: tls (default), starttls, plaintext
+  #  security: "tls"
 
 output:
   # output file
@@ -29,6 +31,9 @@ output:
 
 # perform reverse lookups?
 lookup_addr: no
+
+# limit lookup pool size; must be positive; default = 50
+#lookup_limit: 50
 
 # merge multiple similar reports to one?
 merge_reports: yes
