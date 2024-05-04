@@ -90,6 +90,8 @@ Copy config/config.dist.yaml to config.yaml and change parameters:
 
 * **lookup_addr** (bool): perform reverse lookup? If enabled, may take some time.
 
+* **lookup_limit** (int): limit lookup pool size; must be positive; default = 50
+
 * **merge_reports** (bool): merge multiple similar reports to one?
 
 * **log_debug** (bool): print debug log messages?
@@ -111,6 +113,8 @@ Copy config/config.dist.yaml to config.yaml and change parameters:
   * **delete** (bool): delete email messages from IMAP server if reports are fetched successfully
 
   * **debug** (bool): print debug messages during IMAP session?
+  
+  * **security** (str): select encryption between "tls" (default), "starttls" or "plaintext"
 
 **output** section:
 
