@@ -83,6 +83,16 @@ Installation
 
     and go to the http://your-web-server/dmarc
 
+### docker compose
+
+There is a Docker Compose wrapper created by @nielsbom (thanks!):
+
+https://github.com/nielsbom/dmarc_report_viewer
+
+### Nix
+
+There is a Nix package [dmarc-report-converter][1] created by @Nebucatnetzer (thanks!):
+
 Configuration
 -------------
 
@@ -93,6 +103,10 @@ Copy config/config.dist.yaml to config.yaml and change parameters:
 * **lookup_limit** (int): limit lookup pool size; must be positive; default = 50
 
 * **merge_reports** (bool): merge multiple similar reports to one?
+
+* **merge_key** (string): Go template string used to generate a key to merge
+  reports.  Only used when `merge_reports` is enabled.
+  Default is `{{ .ReportMetadata.OrgName }}!{{ .ReportMetadata.Email }}!{{ .PolicyPublished.Domain }}`.
 
 * **log_debug** (bool): print debug log messages?
 
@@ -113,7 +127,7 @@ Copy config/config.dist.yaml to config.yaml and change parameters:
   * **delete** (bool): delete email messages from IMAP server if reports are fetched successfully
 
   * **debug** (bool): print debug messages during IMAP session?
-  
+
   * **security** (str): select encryption between "tls" (default), "starttls" or "plaintext"
 
 **output** section:
@@ -216,3 +230,7 @@ Thanks
 * [jquery](http://jquery.com/)
 * [ChartJS](http://chartjs.org/)
 * [golang emersion packages](https://github.com/emersion) (go-imap, go-message, go-sasl, go-textwrapper)
+
+And we have a lot of [contributors](https://github.com/tierpod/dmarc-report-converter/graphs/contributors)!
+
+[1]: https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/dm/dmarc-report-converter/package.nix
